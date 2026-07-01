@@ -3,7 +3,7 @@ Oracle -- Set up to randomise and return the oracle operation to the required al
 '''
 
 from qiskit import *
-from random import random
+from random import random, getrandbits
 
 class DJ_oracle:
 	def __init__(self, n_qubits):
@@ -21,3 +21,12 @@ class DJ_oracle:
 			qc.x(self.n_qubits) # Always flips the output/ancilla qubit.
 		return qc
 
+class BV_oracle:
+	def __init__(self, n_qubits):
+		self.s = format(getrandbits(n_qubits), f'0{n_qubits}b')
+		self.n_qubits = n_qubits
+	def f(self, qc):
+		for idx, i in enumerate(self.s):
+			if i == '1':
+				qc.cx(idx, self.n_qubits) # This will apply the bitwise sum.
+		return qc
