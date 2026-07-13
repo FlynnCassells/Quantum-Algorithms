@@ -4,6 +4,7 @@ Oracle -- Set up to randomise and return the oracle operation to the required al
 
 from qiskit import *
 from random import random, getrandbits
+from qiskit.circuit.library import ZGate
 
 class DJ_oracle:
 	def __init__(self, n_qubits):
@@ -55,4 +56,19 @@ class Simon_oracle:
 			if self.s[i] == "1":
 				qc.cx(self.j, i+self.n_qubits)
 			i+=1
+		return qc
+
+class Grover_oracle:
+	def __init__(self, n_qubits):
+		self.mark = format(getrandbits(n_qubits), f'0{n_qubits}b') #Choose a state to mark
+		self.n_qubits = n_qubits
+	def f(self, qc):
+		for idx, bit in enumerate(self.mark):
+			if bit == "0":
+				qc.x(idx)
+		multi_controlled_z = ZGate().control(self.n_qubits-1)
+		qc.append(multi_controlled_z, range(self.n_qubits))
+		for idx, bit in enumerate(self.mark):
+			if bit == "0":
+				qc.x(idx)
 		return qc
