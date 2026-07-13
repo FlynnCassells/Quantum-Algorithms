@@ -30,3 +30,29 @@ class BV_oracle:
 			if i == '1':
 				qc.cx(idx, self.n_qubits) # This will apply the bitwise sum.
 		return qc
+
+class Simon_oracle:
+	def __init__(self, n_qubits):
+		while True:
+		    self.s = format(getrandbits(n_qubits), f'0{n_qubits}b')
+		    if int(self.s, 2) != 0:
+		        break
+		self.n_qubits = n_qubits
+		a = int(self.s, 2)
+		pos = len(self.s)
+		j = None
+		while j is None:
+			if a&1 == 1:
+				j = pos
+			else:
+				a = a>>1
+				pos -= 1
+		self.j = j-1 #This is the index for the leaset significant 1 in the bit string.
+	def f(self, qc):
+		i = 0
+		while i < self.n_qubits:
+			qc.cx(i, i+self.n_qubits) #Copies the input register into the ouput.
+			if self.s[i] == "1":
+				qc.cx(self.j, i+self.n_qubits)
+			i+=1
+		return qc
